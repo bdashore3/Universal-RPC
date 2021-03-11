@@ -27,7 +27,7 @@ jobs:
       - name: Install Dependencies
         run: yarn install
       - name: Build
-        run: yarn make
+        run: yarn build && yarn make
       - name: Get package version
         id: get_package_version
         run: echo "::set-output name=VERSION::$(node -e "console.log(require('./package.json').version);")"
