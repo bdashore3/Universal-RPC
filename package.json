@@ -1,0 +1,66 @@
+{
+  "name": "universal-rpc",
+  "version": "0.0.1",
+  "productName": "universal-rpc",
+  "description": "A custom discord game activity application",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsc && electron-forge start",
+    "build": "tsc",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts ."
+  },
+  "keywords": [],
+  "author": {
+    "name": "kingbri",
+    "email": "bdashore3@gmail.com"
+  },
+  "license": "Apache-2.0",
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel"
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-appx": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
+    "@types/discord-rpc": "^3.0.5",
+    "@typescript-eslint/eslint-plugin": "^2.18.0",
+    "@typescript-eslint/parser": "^2.18.0",
+    "electron": "12.0.0",
+    "eslint": "^7.6.0",
+    "eslint-plugin-import": "^2.20.0",
+    "prettier": "^2.2.1",
+    "typescript": "^4.0.2"
+  },
+  "dependencies": {
+    "discord-rpc": "^3.2.0",
+    "electron-debug": "^3.2.0",
+    "electron-squirrel-startup": "^1.0.0"
+  }
+}
