@@ -6,7 +6,9 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "yarn build && electron-forge start",
-    "build": "tsc && @powershell md -f dist/html && @powershell cp -r src/html/* dist/html",
+    "build": "run-script-os",
+    "build:darwin:linux": "tsc && cp -r src/html dist",
+    "build:win32": "tsc && @powershell md -f dist/html && @powershell cp -r src/html/* dist/html",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
@@ -24,7 +26,7 @@
       "packagerConfig": {
         "prune": true,
         "ignore": [
-          "^\/(src | .github)",
+          "^/(src | .github)",
           ".eslintrc",
           ".eslintignore",
           ".prettierrc",
@@ -67,6 +69,7 @@
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-import": "^2.20.0",
     "prettier": "^2.2.1",
+    "run-script-os": "^1.1.5",
     "typescript": "^4.2.3"
   },
   "dependencies": {
