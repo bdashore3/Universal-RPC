@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<p>Input RPC here. Input what you want, leave everything else blank.</p>
+<form id="rpcForm">
+    <label for="details">RPC title:</label>
+    <input type="text" id="details" name="title" />
+    <br />
+    <label for="state">RPC description:</label>
+    <input type="text" id="state" name="description" />
+    <br />
+    <label for="largeImageKey">Large image key:</label>
+    <input type="text" id="largeImageKey" name="Large image key" />
+    <br />
+    <label for="largeImageText">Large image hover text:</label>
+    <input type="text" id="largeImageText" name="Large image text" />
+    <br />
+    <label for="smallImageKey">Small image key:</label>
+    <input type="text" id="smallImageKey" name="Small image key" />
+    <br />
+    <label for="smallImageText">Small image hover text:</label>
+    <input type="text" id="smallImageText" name="Small image text" />
+    <br />
+    <input type="submit" />
+    <input type="reset" />
+    <div id="reply"></div>
+</form>
+<script>
+    require('../scripts/rpcRender.js');
+</script>

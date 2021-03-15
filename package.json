@@ -5,8 +5,8 @@
   "description": "A custom discord game activity application",
   "main": "dist/index.js",
   "scripts": {
-    "start": "tsc && electron-forge start",
-    "build": "tsc",
+    "start": "yarn build && electron-forge start",
+    "build": "tsc && @powershell md -f dist/html && @powershell cp -r src/html/* dist/html",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
@@ -21,7 +21,21 @@
   "license": "Apache-2.0",
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "prune": true,
+        "ignore": [
+          "^\/(src | .github)",
+          ".eslintrc",
+          ".eslintignore",
+          ".prettierrc",
+          ".prettierignore",
+          ".yarnrc.yml",
+          ".gitignore",
+          "README.md",
+          "LICENSE",
+          "tsconfig.json"
+        ]
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel"

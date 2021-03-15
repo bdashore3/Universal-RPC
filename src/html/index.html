@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <p>Universal RPC client</p>
+        <p>
+            Create an app
+            <a href="https://discord.com/developers/applications" target="_blank">here</a> and copy
+            the client ID
+        </p>
+        <p>Please enter that client ID below</p>
+        <form>
+            <label for="clientId">Client Id:</label>
+            <input type="text" id="clientId" name="clientId" />
+            <br />
+            <input type="submit" />
+            <div id="reply"></div>
+        </form>
+        <script>
+            require('../scripts/clientId.js');
+        </script>
+    </body>
+</html>

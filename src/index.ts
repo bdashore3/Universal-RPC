@@ -18,7 +18,7 @@ function createWindow(): void {
     });
 
     win.setMenuBarVisibility(false);
-    win.loadFile(path.join(__dirname, '../src/index.html'));
+    win.loadFile(path.join(__dirname, 'html/index.html'));
 }
 
 app.whenReady().then(createWindow);
@@ -45,7 +45,7 @@ ipcMain.on('clientId:value', async function (event, value) {
     if (result.success) {
         const win = BrowserWindow.getFocusedWindow();
         setTimeout(function () {
-            win?.loadFile(path.join(__dirname, '../src/pagetwo.html'));
+            win?.loadFile(path.join(__dirname, 'html/pagetwo.html'));
         }, 2.5e3);
     }
 });
@@ -59,7 +59,7 @@ ipcMain.on('destroyRpc', async function (event) {
         const win = BrowserWindow.getFocusedWindow();
         setTimeout(() => {
             setTimeout(function () {
-                win?.loadFile(path.join(__dirname, '../src/index.html'));
+                win?.loadFile(path.join(__dirname, 'html/index.html'));
             }, 4e3);
         });
     }

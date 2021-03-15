@@ -1,4 +1,4 @@
-import DiscordRPC = require('discord-rpc');
+import * as DiscordRPC from 'discord-rpc';
 
 let rpc: DiscordRPC.Client;
 let presence: DiscordRPC.Presence = { instance: false };
