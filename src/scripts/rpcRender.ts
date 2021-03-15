@@ -5,17 +5,30 @@ form.addEventListener('submit', submitForm);
 form.addEventListener('reset', resetForm);
 
 function submitForm(e: Event) {
-    console.log(typeof e);
-
     e.preventDefault();
 
     const newPresence: Record<string, unknown> = {};
 
-    const children = <NodeListOf<HTMLInputElement>>form.querySelectorAll('input[type="text"]');
+    const children = <NodeListOf<HTMLInputElement>>(
+        form.querySelectorAll('input[type="text"], input[type=checkbox]')
+    );
 
     children.forEach((child: HTMLInputElement) => {
-        if (child.value !== '') {
-            newPresence[child.id] = child.value;
+        switch (child.type) {
+            case 'text':
+                if (child.value !== '') {
+                    newPresence[child.id] = child.value;
+                }
+
+                break;
+            case 'checkbox':
+                if (child.checked) {
+                    newPresence.startTimestamp = new Date();
+                } else {
+                    newPresence.startTimestamp = null;
+                }
+
+                break;
         }
     });
 
