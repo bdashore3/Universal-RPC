@@ -1,58 +1,10 @@
-import DiscordRPC = require('discord-rpc');
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
-
-let rpc: DiscordRPC.Client;
-let presence: DiscordRPC.Presence = { instance: false };
-
-export interface RpcResult {
-    success: boolean;
-    error?: string;
-}
+import { registerId, destroyRpc, updatePresence } from './rpc';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
     app.quit();
-}
-
-async function generateHandler(rpc: DiscordRPC.Client): Promise<void> {
-    rpc.on('ready', () => {
-        rpc.setActivity(presence);
-
-        setInterval(() => {
-            rpc.setActivity(presence);
-        }, 15e3);
-    });
-}
-
-async function registerId(clientId: string): Promise<RpcResult> {
-    rpc = new DiscordRPC.Client({ transport: 'ipc' });
-
-    DiscordRPC.register(clientId);
-    await generateHandler(rpc);
-
-    try {
-        await rpc.login({ clientId });
-    } catch (e) {
-        console.error;
-        return { success: false, error: e.message };
-    }
-
-    return { success: true };
-}
-
-function updatePresence(newPresence: DiscordRPC.Presence): void {
-    presence = { ...presence, ...newPresence };
-}
-
-async function destroyRpc(): Promise<RpcResult> {
-    try {
-        await rpc.destroy();
-    } catch (e) {
-        return { success: false, error: e.message };
-    }
-
-    return { success: true };
 }
 
 function createWindow(): void {
@@ -104,8 +56,6 @@ ipcMain.on('destroyRpc', async function (event) {
     event.reply('asynchronous-reply', result);
 
     if (result.success) {
-        presence = {};
-
         const win = BrowserWindow.getFocusedWindow();
         setTimeout(() => {
             setTimeout(function () {
