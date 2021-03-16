@@ -21,7 +21,7 @@ function submitForm(e: Event) {
     ipcRenderer.send('clientId:value', clientId);
 
     ipcRenderer.on('asynchronous-reply', (event, arg) => {
-        const replyDiv = <HTMLElement>document.querySelector('#reply');
+        const replyDiv: HTMLElement = document.querySelector('#reply')!;
 
         if (arg.success === true) {
             replyDiv.innerHTML = 'Success!';

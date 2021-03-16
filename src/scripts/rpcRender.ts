@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 
-const form = <HTMLFormElement>document.querySelector('#rpcForm');
+const form: HTMLFormElement = document.querySelector('#rpcForm')!;
 form.addEventListener('submit', submitForm);
 form.addEventListener('reset', resetForm);
 
@@ -9,14 +9,18 @@ function submitForm(e: Event) {
 
     const newPresence: Record<string, unknown> = {};
 
-    const children = <NodeListOf<HTMLInputElement>>(
-        form.querySelectorAll('input[type="text"], input[type=checkbox]')
+    const children: NodeListOf<HTMLInputElement> = form.querySelectorAll(
+        'input[type="text"], input[type="checkbox"]'
     );
 
     children.forEach((child: HTMLInputElement) => {
         switch (child.type) {
             case 'text':
-                if (child.value !== '') {
+                if (child.value === '') {
+                    console.log(`${child.id} is nonexistent!`);
+                }
+
+                if (child.value !== '' && !child.value.startsWith('button')) {
                     newPresence[child.id] = child.value;
                 }
 
@@ -32,18 +36,69 @@ function submitForm(e: Event) {
         }
     });
 
+    const buttonDiv: HTMLDivElement = document.querySelector('#buttons')!;
+    const buttonDivInputs: NodeListOf<HTMLInputElement> = buttonDiv.querySelectorAll(
+        'input[type="text"]'
+    );
+
+    if (buttonDivInputs.length !== 0) {
+        const buttons = concatButtons(buttonDiv, buttonDivInputs);
+
+        newPresence.buttons = buttons;
+    }
+
+    console.log(newPresence);
+
     ipcRenderer.send('doUpdatePresence', newPresence);
 }
 
 ipcRenderer.on('asynchronous-reply', () => {
-    const reply = <HTMLElement>document.querySelector('#reply');
-
-    reply.innerHTML = 'RPC successfully set! It may take some time for the changes to appear...';
-
-    setTimeout(() => {
-        reply.innerHTML = '';
-    }, 4e3);
+    sendReply(true, 'RPC successfully set! It may take some time for the changes to appear...');
 });
+
+function concatButtons(
+    buttonDiv: HTMLDivElement,
+    buttonDivInputs: NodeListOf<HTMLInputElement>
+): Array<{ label: string; url: string }> {
+    const buttons: Array<{ label: string; url: string }> = [];
+
+    for (let i = 1; i <= buttonDivInputs.length / 2; i++) {
+        const tempLabel: HTMLInputElement = buttonDiv.querySelector(`#button${i}Label`)!;
+        const tempUrl: HTMLInputElement = buttonDiv.querySelector(`#button${i}Url`)!;
+
+        if (tempLabel.value === '' || tempUrl.value === '') {
+            sendReply(
+                true,
+                'Your buttons were not included because you have to provide a name and URL!'
+            );
+        } else {
+            if (!tempUrl.value.startsWith('http://') || !tempUrl.value.startsWith('https://')) {
+                tempUrl.value = 'https://' + tempUrl.value;
+            }
+
+            const tempButton: { label: string; url: string } = {
+                label: tempLabel.value,
+                url: tempUrl.value
+            };
+
+            buttons.push(tempButton);
+        }
+    }
+
+    return buttons;
+}
+
+function sendReply(temp: boolean, input: string) {
+    const replyDiv: HTMLDivElement = document.querySelector('#reply')!;
+
+    replyDiv.innerHTML = input;
+
+    if (temp) {
+        setTimeout(() => {
+            replyDiv.innerHTML = '';
+        }, 4e3);
+    }
+}
 
 function resetForm(e: Event) {
     e.preventDefault();
@@ -51,12 +106,10 @@ function resetForm(e: Event) {
     ipcRenderer.send('destroyRpc');
 
     ipcRenderer.on('asynchronous-reply', (event, arg) => {
-        const reply = <HTMLElement>document.querySelector('#reply');
-
         if (arg.success === true) {
-            reply.innerHTML = 'Sucessfully reset the client! Redirecting to the client ID page...';
+            sendReply(false, 'Sucessfully reset the client! Redirecting to the client ID page...');
         } else {
-            reply.innerHTML = `There was an error! Please manually restart the app: ${arg.error}`;
+            sendReply(false, `There was an error! Please manually restart the app: ${arg.error}`);
         }
     });
 }
