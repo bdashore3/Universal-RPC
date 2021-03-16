@@ -72,7 +72,7 @@ function concatButtons(
                 'Your buttons were not included because you have to provide a name and URL!'
             );
         } else {
-            if (!tempUrl.value.startsWith('http://') || !tempUrl.value.startsWith('https://')) {
+            if (!tempUrl.value.startsWith('http://') && !tempUrl.value.startsWith('https://')) {
                 tempUrl.value = 'https://' + tempUrl.value;
             }
 
