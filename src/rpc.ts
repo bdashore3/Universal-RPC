@@ -37,6 +37,10 @@ export async function registerId(clientId: string): Promise<RpcResult> {
 
 export function updatePresence(newPresence: DiscordRPC.Presence): void {
     presence = { ...presence, ...newPresence };
+
+    if (presence.buttons && presence.buttons.length === 0) {
+        delete presence['buttons'];
+    }
 }
 
 export async function destroyRpc(): Promise<RpcResult> {
