@@ -16,11 +16,7 @@ function submitForm(e: Event) {
     children.forEach((child: HTMLInputElement) => {
         switch (child.type) {
             case 'text':
-                if (child.value === '') {
-                    console.log(`${child.id} is nonexistent!`);
-                }
-
-                if (child.value !== '' && !child.value.startsWith('button')) {
+                if (child.value !== '' && !child.id.startsWith('button')) {
                     newPresence[child.id] = child.value;
                 }
 
@@ -41,13 +37,7 @@ function submitForm(e: Event) {
         'input[type="text"]'
     );
 
-    if (buttonDivInputs.length !== 0) {
-        const buttons = concatButtons(buttonDiv, buttonDivInputs);
-
-        newPresence.buttons = buttons;
-    }
-
-    console.log(newPresence);
+    newPresence.buttons = concatButtons(buttonDiv, buttonDivInputs);
 
     ipcRenderer.send('doUpdatePresence', newPresence);
 }
@@ -66,22 +56,24 @@ function concatButtons(
         const tempLabel: HTMLInputElement = buttonDiv.querySelector(`#button${i}Label`)!;
         const tempUrl: HTMLInputElement = buttonDiv.querySelector(`#button${i}Url`)!;
 
-        if (tempLabel.value === '' || tempUrl.value === '') {
-            sendReply(
-                true,
-                'Your buttons were not included because you have to provide a name and URL!'
-            );
-        } else {
-            if (!tempUrl.value.startsWith('http://') && !tempUrl.value.startsWith('https://')) {
-                tempUrl.value = 'https://' + tempUrl.value;
+        if (!(tempLabel.value === '' && tempUrl.value === '')) {
+            if (tempLabel.value === '' || tempUrl.value === '') {
+                sendReply(
+                    true,
+                    'Your buttons were not included because you have to provide a name and URL!'
+                );
+            } else {
+                if (!tempUrl.value.startsWith('http://') && !tempUrl.value.startsWith('https://')) {
+                    tempUrl.value = 'https://' + tempUrl.value;
+                }
+
+                const tempButton: { label: string; url: string } = {
+                    label: tempLabel.value,
+                    url: tempUrl.value
+                };
+
+                buttons.push(tempButton);
             }
-
-            const tempButton: { label: string; url: string } = {
-                label: tempLabel.value,
-                url: tempUrl.value
-            };
-
-            buttons.push(tempButton);
         }
     }
 
