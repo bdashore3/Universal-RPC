@@ -53,6 +53,10 @@ Head to the [Discord developer website](https://discordapp.com/developers) and c
     - Large image hover text: The text shown when hovering over the large image
     - Small image key: Same input as `Large image key`
     - Small image hover text: Same as `Large image hover text` except it's for the small image
+    - Display time elapsed: Checkbox to show a stopwatch of time elapsed
+    - Buttons: There are two buttons. Each one contains two parameters. BOTH must be filled for the button to show up!
+        - Name: The name displayed on the RPC button
+        - URL: The URL the button navigates to
 3. Hit the `Submit` button. It will take a maximum of 15 seconds for your status to update due to Discord ratelimits.
 4. Change any of the fields to update the status, or hit the `reset` button if you want to use a new client ID
 5. To quit the app, simply close it.
