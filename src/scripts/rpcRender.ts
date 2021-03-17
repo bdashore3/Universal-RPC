@@ -43,7 +43,11 @@ function submitForm(e: Event) {
 }
 
 ipcRenderer.on('asynchronous-reply', () => {
-    sendReply(true, 'RPC successfully set! It may take some time for the changes to appear...');
+    sendReply(
+        false,
+        true,
+        'RPC successfully set! It may take some time for the changes to appear...'
+    );
 });
 
 function concatButtons(
@@ -59,6 +63,7 @@ function concatButtons(
         if (!(tempLabel.value === '' && tempUrl.value === '')) {
             if (tempLabel.value === '' || tempUrl.value === '') {
                 sendReply(
+                    true,
                     true,
                     'Your buttons were not included because you have to provide a name and URL!'
                 );
@@ -80,14 +85,20 @@ function concatButtons(
     return buttons;
 }
 
-function sendReply(temp: boolean, input: string) {
-    const replyDiv: HTMLDivElement = document.querySelector('#reply')!;
+function sendReply(error: boolean, temp: boolean, input: string) {
+    let changeDiv: HTMLDivElement;
 
-    replyDiv.innerHTML = input;
+    if (error) {
+        changeDiv = document.querySelector('#error')!;
+    } else {
+        changeDiv = document.querySelector('#reply')!;
+    }
+
+    changeDiv.innerHTML = input;
 
     if (temp) {
         setTimeout(() => {
-            replyDiv.innerHTML = '';
+            changeDiv.innerHTML = '';
         }, 4e3);
     }
 }
@@ -99,9 +110,17 @@ function resetForm(e: Event) {
 
     ipcRenderer.on('asynchronous-reply', (event, arg) => {
         if (arg.success === true) {
-            sendReply(false, 'Sucessfully reset the client! Redirecting to the client ID page...');
+            sendReply(
+                false,
+                false,
+                'Sucessfully reset the client! Redirecting to the client ID page...'
+            );
         } else {
-            sendReply(false, `There was an error! Please manually restart the app: ${arg.error}`);
+            sendReply(
+                true,
+                false,
+                `There was an error! Please manually restart the app: ${arg.error}`
+            );
         }
     });
 }
