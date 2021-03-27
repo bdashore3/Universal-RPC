@@ -1,7 +1,9 @@
 import * as DiscordRPC from 'discord-rpc';
+import { readFile } from 'fs';
 
 let rpc: DiscordRPC.Client;
 let presence: DiscordRPC.Presence = { instance: false };
+let clientId: string;
 
 export interface RpcResult {
     success: boolean;
@@ -18,21 +20,43 @@ async function generateHandler(rpc: DiscordRPC.Client): Promise<void> {
     });
 }
 
-export async function registerId(clientId: string): Promise<RpcResult> {
+export function getClientId(): string {
+    return clientId;
+}
+
+export async function registerClient(_clientId: string): Promise<RpcResult> {
     rpc = new DiscordRPC.Client({ transport: 'ipc' });
 
-    DiscordRPC.register(clientId);
+    DiscordRPC.register(_clientId);
     await generateHandler(rpc);
 
     try {
-        await rpc.login({ clientId });
+        await rpc.login({ clientId: _clientId });
     } catch (e) {
         console.error;
         return { success: false, error: e.message };
     }
 
+    clientId = _clientId;
     presence = { instance: false };
     return { success: true };
+}
+
+export async function loadRpcJson(): Promise<void> {
+    readFile('configs/test.json', 'utf8', async (err, data) => {
+        if (err) {
+            console.log(err.message);
+        } else {
+            console.log('JSON successful!');
+
+            const newPresence: Record<string, unknown> = JSON.parse(data);
+
+            await registerClient(newPresence.clientId as string);
+            delete newPresence['clientId'];
+
+            updatePresence(newPresence);
+        }
+    });
 }
 
 export function updatePresence(newPresence: DiscordRPC.Presence): void {
@@ -43,7 +67,7 @@ export function updatePresence(newPresence: DiscordRPC.Presence): void {
     }
 }
 
-export async function destroyRpc(): Promise<RpcResult> {
+export async function destroyClient(): Promise<RpcResult> {
     try {
         await rpc.destroy();
     } catch (e) {

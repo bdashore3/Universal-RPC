@@ -1,4 +1,5 @@
 import { ipcRenderer, shell } from 'electron';
+import { sendReply } from './utils';
 
 document?.addEventListener('click', handleClick);
 
@@ -11,22 +12,26 @@ function handleClick(event: MouseEvent) {
     }
 }
 
-const form = <HTMLFormElement>document.querySelector('form');
+const form: HTMLFormElement = document.querySelector('form')!;
 form.addEventListener('submit', submitForm);
 
 function submitForm(e: Event) {
     e.preventDefault();
 
     const clientId = (<HTMLInputElement>document.querySelector('#clientId')).value;
-    ipcRenderer.send('clientId:value', clientId);
+
+    console.log('sending!');
+    ipcRenderer.send('register', clientId);
 
     ipcRenderer.on('asynchronous-reply', (event, arg) => {
-        const replyDiv: HTMLElement = document.querySelector('#reply')!;
-
         if (arg.success === true) {
-            replyDiv.innerHTML = 'Success!';
+            sendReply(false, false, 'Success!');
         } else {
-            replyDiv.innerHTML = `There was an error! Please enter a valid client ID: ${arg.error}`;
+            sendReply(
+                true,
+                false,
+                `There was an error! Please enter a valid client ID: ${arg.error}`
+            );
         }
     });
 }

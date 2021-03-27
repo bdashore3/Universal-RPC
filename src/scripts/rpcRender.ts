@@ -1,14 +1,35 @@
 import { ipcRenderer } from 'electron';
+import { sendReply } from './utils';
 
-const form: HTMLFormElement = document.querySelector('#rpcForm')!;
-form.addEventListener('submit', submitForm);
-form.addEventListener('reset', resetForm);
+const submitButton: HTMLButtonElement = document.querySelector('#submit')!;
+submitButton.addEventListener('click', submitForm);
+
+const resetButton: HTMLButtonElement = document.querySelector('#reset')!;
+resetButton.addEventListener('click', resetForm);
+
+const saveButton: HTMLButtonElement = document.querySelector('#save')!;
+saveButton.addEventListener('click', saveConfig);
 
 function submitForm(e: Event) {
     e.preventDefault();
 
+    const newPresence = generatePresence();
+
+    ipcRenderer.send('updatePresence', newPresence);
+}
+
+ipcRenderer.on('asynchronous-reply', () => {
+    sendReply(
+        false,
+        true,
+        'RPC successfully set! It may take some time for the changes to appear...'
+    );
+});
+
+function generatePresence(): Record<string, unknown> {
     const newPresence: Record<string, unknown> = {};
 
+    const form: HTMLFormElement = document.querySelector('#rpcForm')!;
     const children: NodeListOf<HTMLInputElement> = form.querySelectorAll(
         'input[type="text"], input[type="checkbox"]'
     );
@@ -39,16 +60,8 @@ function submitForm(e: Event) {
 
     newPresence.buttons = concatButtons(buttonDiv, buttonDivInputs);
 
-    ipcRenderer.send('doUpdatePresence', newPresence);
+    return newPresence;
 }
-
-ipcRenderer.on('asynchronous-reply', () => {
-    sendReply(
-        false,
-        true,
-        'RPC successfully set! It may take some time for the changes to appear...'
-    );
-});
 
 function concatButtons(
     buttonDiv: HTMLDivElement,
@@ -85,28 +98,10 @@ function concatButtons(
     return buttons;
 }
 
-function sendReply(error: boolean, temp: boolean, input: string) {
-    let changeDiv: HTMLDivElement;
-
-    if (error) {
-        changeDiv = document.querySelector('#error')!;
-    } else {
-        changeDiv = document.querySelector('#reply')!;
-    }
-
-    changeDiv.innerHTML = input;
-
-    if (temp) {
-        setTimeout(() => {
-            changeDiv.innerHTML = '';
-        }, 4e3);
-    }
-}
-
 function resetForm(e: Event) {
     e.preventDefault();
 
-    ipcRenderer.send('destroyRpc');
+    ipcRenderer.send('destroy');
 
     ipcRenderer.on('asynchronous-reply', (event, arg) => {
         if (arg.success === true) {
@@ -123,4 +118,12 @@ function resetForm(e: Event) {
             );
         }
     });
+}
+
+function saveConfig(e: Event) {
+    e.preventDefault();
+
+    const newPresence = generatePresence();
+
+    ipcRenderer.send('saveConfig', newPresence);
 }

@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { writeFile } from 'fs';
 import * as path from 'path';
-import { registerId, destroyRpc, updatePresence } from './rpc';
+import { destroyClient, getClientId, registerClient, updatePresence } from './rpc';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -35,10 +36,10 @@ app.on('activate', () => {
     }
 });
 
-ipcMain.on('clientId:value', async function (event, value) {
+ipcMain.on('register', async function (event, value) {
     const clientId: string = value;
 
-    const result = await registerId(clientId);
+    const result = await registerClient(clientId);
 
     event.reply('asynchronous-reply', result);
 
@@ -50,8 +51,8 @@ ipcMain.on('clientId:value', async function (event, value) {
     }
 });
 
-ipcMain.on('destroyRpc', async function (event) {
-    const result = await destroyRpc();
+ipcMain.on('destroy', async function (event) {
+    const result = await destroyClient();
 
     event.reply('asynchronous-reply', result);
 
@@ -65,8 +66,27 @@ ipcMain.on('destroyRpc', async function (event) {
     }
 });
 
-ipcMain.on('doUpdatePresence', function (event, newPresence) {
+ipcMain.on('updatePresence', function (event, newPresence) {
     updatePresence(newPresence);
+    event.reply('asynchronous-reply');
+});
 
-    event.reply('asynchronous-reply', '');
+ipcMain.on('saveConfig', function (event, newPresence) {
+    newPresence['clientId'] = getClientId();
+
+    if (newPresence['startTimestamp'] !== null) {
+        newPresence['startTimestamp'] = true;
+    }
+
+    if (newPresence.buttons.length === 0) {
+        delete newPresence['buttons'];
+    }
+
+    const newPresenceJson = JSON.stringify(newPresence, null, 2);
+
+    writeFile('configs/config.json', newPresenceJson, { flag: 'w' }, (err) => {
+        if (err) {
+            console.log(err.message);
+        }
+    });
 });
