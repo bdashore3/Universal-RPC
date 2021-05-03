@@ -10,7 +10,7 @@ This app uses electron-js to provide a frontend for game activity statuses. You 
 
 # Example
 
-![A custom RPC status running on my discord profile](https://files.kingbri.me/random-images/kingbri-rpc.png)
+![A custom RPC status running on my discord profile](https://files.kingbri.me/app-assets/Universal-RPC/kingbri-rpc.png)
 
 # Installation
 
